@@ -1,47 +1,92 @@
+// Function to check if the current URL is a YouTube Shorts page
+function isShortsPage() {
+  return (
+    location.hostname === "www.youtube.com" &&
+    location.pathname.startsWith("/shorts/")
+  );
+}
+
+// Function to add timeline controls
 function addTimelineControls() {
+  // Check if the current page is a YouTube Shorts page
+  if (!isShortsPage()) return;
+
   // Find the video element
   const videoElement = document.querySelector("video");
 
-  // If video element exists, add controls
-  if (videoElement) {
-    // Create controls container
-    const controlsContainer = document.createElement("div");
-    controlsContainer.style.position = "fixed";
-    controlsContainer.style.bottom = "30px";
-    controlsContainer.style.left = "57%";
-    controlsContainer.style.transform = "translateX(-50%)";
-    controlsContainer.style.zIndex = "9999";
-    controlsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    controlsContainer.style.padding = "10px";
-    controlsContainer.style.borderRadius = "5px";
-    controlsContainer.style.display = "flex";
-    controlsContainer.style.justifyContent = "center";
-    controlsContainer.style.width = `${videoElement.clientWidth}px`;
+  // Check if video element exists and if controls already exist
+  const controls = document.getElementById("timelineControls");
+  if (!videoElement || controls) return; // Return if controls already exist
 
-    // Create timeline
-    const timeline = document.createElement("input");
-    timeline.type = "range";
-    timeline.min = "0";
-    timeline.value = "0";
-    timeline.style.width = "100%";
-    timeline.style.cursor = "pointer";
-    timeline.addEventListener("input", function () {
-      const time = (videoElement.duration / 100) * timeline.value;
+  // Create controls container
+  const controlsContainer = document.createElement("div");
+  controlsContainer.id = "timelineControls"; // Add an ID for easy removal later
+  controlsContainer.style.position = "fixed";
+  controlsContainer.style.bottom = "30px";
+  controlsContainer.style.left = "57%";
+  controlsContainer.style.transform = "translateX(-50%)";
+  controlsContainer.style.zIndex = "9999";
+  controlsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  controlsContainer.style.padding = "10px";
+  controlsContainer.style.borderRadius = "5px";
+  controlsContainer.style.display = "flex";
+  controlsContainer.style.justifyContent = "center";
+  controlsContainer.style.width = "400px"; // Adjusted width
+
+  // Create timeline
+  const timeline = document.createElement("input");
+  timeline.type = "range";
+  timeline.min = "0";
+  timeline.value = "0";
+  timeline.style.width = "100%"; // Adjusted width
+  timeline.style.cursor = "pointer";
+
+  // Add event listener for timeline input
+  timeline.addEventListener("input", function () {
+    const percentage = parseInt(timeline.value);
+    if (!isNaN(percentage) && isFinite(percentage)) {
+      const time = (videoElement.duration / 100) * percentage;
       videoElement.currentTime = time;
-    });
-    controlsContainer.appendChild(timeline);
+    }
+  });
 
-    // Append controls to the body
-    document.body.appendChild(controlsContainer);
+  // Append timeline to controls container
+  controlsContainer.appendChild(timeline);
 
-    // Update timeline as video plays
-    videoElement.addEventListener("timeupdate", function () {
-      timeline.value = (videoElement.currentTime / videoElement.duration) * 100;
-    });
+  // Append controls container to body
+  document.body.appendChild(controlsContainer);
+
+  // Update timeline as video plays
+  videoElement.addEventListener("timeupdate", function () {
+    timeline.value = (videoElement.currentTime / videoElement.duration) * 100;
+  });
+}
+
+// Function to remove timeline controls
+function removeTimelineControls() {
+  const controlsContainer = document.getElementById("timelineControls");
+  if (controlsContainer) {
+    controlsContainer.remove();
   }
 }
 
-// Add controls when the page is loaded
+// Create a MutationObserver to watch for changes to the DOM
+const observer = new MutationObserver((mutationsList) => {
+  // Check if the URL changes
+  if (!isShortsPage()) {
+    // If not on a Shorts page, remove the timeline controls
+    removeTimelineControls();
+  } else {
+    // If on a Shorts page, add the timeline controls
+    console.log("Shorts page detected");
+    addTimelineControls();
+  }
+});
+
+// Start observing changes to the DOM
+observer.observe(document.body, { subtree: true, childList: true });
+
+// Add controls initially when the page is loaded
 addTimelineControls();
 
 // CONSTANT SELECTORS VARIABLES
