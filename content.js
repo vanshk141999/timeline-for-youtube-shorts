@@ -15,17 +15,15 @@ function addTimelineControls() {
   const videoElement = document.querySelector("video");
 
   // Check if video element exists and if controls already exist
-  const controls = document.getElementById("timelineControls");
-  if (!videoElement || controls) return; // Return if controls already exist
+  const controller = document.getElementById("timelineControls");
+  if (!videoElement || controller) return; // Return if controls already exist
 
   // Create controls container
   const controlsContainer = document.createElement("div");
   controlsContainer.id = "timelineControls"; // Add an ID for easy removal later
   controlsContainer.style.position = "fixed";
   controlsContainer.style.bottom = "30px";
-  // controlsContainer.style.left = "1000px";
-  // adjust the left position to center the controls container
-  controlsContainer.style.left = "50%";
+  controlsContainer.style.left = "57%";
   controlsContainer.style.transform = "translateX(-50%)";
   controlsContainer.style.zIndex = "9999";
   controlsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
@@ -33,7 +31,7 @@ function addTimelineControls() {
   controlsContainer.style.borderRadius = "5px";
   controlsContainer.style.display = "flex";
   controlsContainer.style.justifyContent = "center";
-  controlsContainer.style.width = `${videoElement.clientWidth}px`;
+  controlsContainer.style.width = "400px"; // Adjusted width
 
   // Create timeline
   const timeline = document.createElement("input");
@@ -45,11 +43,8 @@ function addTimelineControls() {
 
   // Add event listener for timeline input
   timeline.addEventListener("input", function () {
-    const percentage = parseInt(timeline.value);
-    if (!isNaN(percentage) && isFinite(percentage)) {
-      const time = (videoElement.duration / 100) * percentage;
-      videoElement.currentTime = time;
-    }
+    const time = (videoElement.duration / 100) * timeline.value;
+    videoElement.currentTime = time;
   });
 
   // Append timeline to controls container
@@ -74,19 +69,34 @@ function removeTimelineControls() {
 
 // Create a MutationObserver to watch for changes to the DOM
 const observer = new MutationObserver((mutationsList) => {
+  mutationsList.forEach((mutation) => {
+    if (mutation.type === "attributes") {
+      // Check if the video element's attributes have changed
+      const videoElement = document.querySelector("video");
+      if (mutation.target === videoElement) {
+        // Update the timeline controls
+        addTimelineControls();
+      }
+    }
+  });
+
   // Check if the URL changes
   if (!isShortsPage()) {
     // If not on a Shorts page, remove the timeline controls
     removeTimelineControls();
-  } else {
-    // If on a Shorts page, add the timeline controls
-    console.log("Shorts page detected");
-    addTimelineControls();
   }
 });
 
 // Start observing changes to the DOM
-observer.observe(document.body, { subtree: true, childList: true });
+observer.observe(document.body, {
+  subtree: true,
+  childList: true,
+  attributes: true,
+  attributeFilter: ["src"],
+});
+
+// Add controls initially when the page is loaded
+addTimelineControls();
 
 // Add controls initially when the page is loaded
 addTimelineControls();
