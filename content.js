@@ -7,6 +7,91 @@ function isShortsPage() {
 }
 
 // Function to add timeline controls
+// function addTimelineControls() {
+//   // Check if the current page is a YouTube Shorts page
+//   if (!isShortsPage()) return;
+
+//   // Find the video element
+//   const videoElement = document.querySelector("video");
+
+//   // Check if video element exists and if controls already exist
+//   const controller = document.getElementById("timelineControls");
+//   if (!videoElement || controller) return; // Return if controls already exist
+
+//   // Create controls container
+//   const controlsContainer = document.createElement("div");
+//   controlsContainer.id = "timelineControls"; // Add an ID for easy removal later
+//   controlsContainer.style.position = "fixed";
+//   controlsContainer.style.bottom = "30px";
+//   controlsContainer.style.left = "57%";
+//   controlsContainer.style.transform = "translateX(-50%)";
+//   controlsContainer.style.zIndex = "9999";
+//   controlsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+//   controlsContainer.style.padding = "10px";
+//   controlsContainer.style.borderRadius = "5px";
+//   controlsContainer.style.display = "flex";
+//   controlsContainer.style.justifyContent = "center";
+//   controlsContainer.style.width = "400px"; // Adjusted width
+
+//   // Create timeline
+//   const timeline = document.createElement("input");
+//   timeline.type = "range";
+//   timeline.min = "0";
+//   timeline.value = "0";
+//   timeline.style.width = "calc(100% - 20px)"; // Adjusted width
+//   timeline.style.cursor = "pointer";
+//   timeline.style.marginRight = "20px"; // Added margin for better appearance
+//   timeline.style.flexGrow = "1"; // Added flex grow for flexibility
+
+//   // Add event listener for timeline input
+//   timeline.addEventListener("input", function () {
+//     const time = (videoElement.duration / 100) * timeline.value;
+//     videoElement.currentTime = time;
+//   });
+
+//   // Append timeline to controls container
+//   controlsContainer.appendChild(timeline);
+
+//   // Append controls container to body
+//   document.body.appendChild(controlsContainer);
+
+//   // Update timeline as video plays
+//   videoElement.addEventListener("timeupdate", function () {
+//     timeline.value = (videoElement.currentTime / videoElement.duration) * 100;
+//   });
+
+//   // Make the controls draggable
+//   let isDragging = false;
+//   let initialX;
+//   let initialLeft;
+//   controlsContainer.addEventListener("mousedown", (e) => {
+//     isDragging = true;
+//     initialX = e.clientX;
+//     initialLeft = controlsContainer.offsetLeft;
+//   });
+
+//   document.addEventListener("mousemove", (e) => {
+//     if (isDragging) {
+//       const offset = e.clientX - initialX;
+//       controlsContainer.style.left = `${initialLeft + offset}px`;
+//     }
+//   });
+
+//   document.addEventListener("mouseup", () => {
+//     isDragging = false;
+//     // Save the position in local storage
+//     const leftPosition = controlsContainer.style.left;
+//     chrome.storage.local.set({ timelineControlsLeft: leftPosition });
+//   });
+
+//   // Restore the position from local storage
+//   chrome.storage.local.get("timelineControlsLeft", (data) => {
+//     if (data.timelineControlsLeft) {
+//       controlsContainer.style.left = data.timelineControlsLeft;
+//     }
+//   });
+// }
+// Function to add timeline controls
 function addTimelineControls() {
   // Check if the current page is a YouTube Shorts page
   if (!isShortsPage()) return;
@@ -38,8 +123,10 @@ function addTimelineControls() {
   timeline.type = "range";
   timeline.min = "0";
   timeline.value = "0";
-  timeline.style.width = "100%"; // Adjusted width
+  timeline.style.width = "calc(100% - 20px)"; // Adjusted width
   timeline.style.cursor = "pointer";
+  timeline.style.marginRight = "20px"; // Added margin for better appearance
+  timeline.style.flexGrow = "1"; // Added flex grow for flexibility
 
   // Add event listener for timeline input
   timeline.addEventListener("input", function () {
@@ -56,6 +143,39 @@ function addTimelineControls() {
   // Update timeline as video plays
   videoElement.addEventListener("timeupdate", function () {
     timeline.value = (videoElement.currentTime / videoElement.duration) * 100;
+  });
+
+  // Make the controls draggable only when not dragging on the input range
+  let isDragging = false;
+  let initialX;
+  let initialLeft;
+  controlsContainer.addEventListener("mousedown", (e) => {
+    if (e.target !== timeline) {
+      isDragging = true;
+      initialX = e.clientX;
+      initialLeft = controlsContainer.offsetLeft;
+    }
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      const offset = e.clientX - initialX;
+      controlsContainer.style.left = `${initialLeft + offset}px`;
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    // Save the position in local storage
+    const leftPosition = controlsContainer.style.left;
+    chrome.storage.local.set({ timelineControlsLeft: leftPosition });
+  });
+
+  // Restore the position from local storage
+  chrome.storage.local.get("timelineControlsLeft", (data) => {
+    if (data.timelineControlsLeft) {
+      controlsContainer.style.left = data.timelineControlsLeft;
+    }
   });
 }
 
