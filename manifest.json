@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Shorts Video Controls with Timeline",
+  "version": "0.1",
+  "description": "Adds video controls with timeline to YouTube Shorts URLs",
+  "author": "Vansh Kapoor",
+  "homepage_url": "https://vanshk141999.github.io/",
+  "permissions": ["activeTab", "storage", "tabs"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/shorts/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
