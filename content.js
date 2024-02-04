@@ -23,7 +23,9 @@ function addTimelineControls() {
   controlsContainer.id = "timelineControls"; // Add an ID for easy removal later
   controlsContainer.style.position = "fixed";
   controlsContainer.style.bottom = "30px";
-  controlsContainer.style.left = "57%";
+  // controlsContainer.style.left = "1000px";
+  // adjust the left position to center the controls container
+  controlsContainer.style.left = "50%";
   controlsContainer.style.transform = "translateX(-50%)";
   controlsContainer.style.zIndex = "9999";
   controlsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
@@ -31,7 +33,7 @@ function addTimelineControls() {
   controlsContainer.style.borderRadius = "5px";
   controlsContainer.style.display = "flex";
   controlsContainer.style.justifyContent = "center";
-  controlsContainer.style.width = "400px"; // Adjusted width
+  controlsContainer.style.width = `${videoElement.clientWidth}px`;
 
   // Create timeline
   const timeline = document.createElement("input");
