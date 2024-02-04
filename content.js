@@ -7,31 +7,16 @@ function addTimelineControls() {
     // Create controls container
     const controlsContainer = document.createElement("div");
     controlsContainer.style.position = "fixed";
-    controlsContainer.style.bottom = "20px";
-    controlsContainer.style.left = "58%"; // Align to center horizontally
-    controlsContainer.style.transform = "translateX(-50%)"; // Adjust for center alignment
+    controlsContainer.style.bottom = "30px";
+    controlsContainer.style.left = "57%";
+    controlsContainer.style.transform = "translateX(-50%)";
     controlsContainer.style.zIndex = "9999";
     controlsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
     controlsContainer.style.padding = "10px";
     controlsContainer.style.borderRadius = "5px";
-    controlsContainer.style.display = "flex"; // Use flexbox for alignment
-    controlsContainer.style.justifyContent = "center"; // Center content horizontally
-    controlsContainer.style.width = "316px"; // Set width to 316px
-
-    // Might be added later
-    // Create play/pause button
-    // const playPauseButton = document.createElement("button");
-    // playPauseButton.textContent = "Pause";
-    // playPauseButton.onclick = function () {
-    //   if (videoElement.paused) {
-    //     videoElement.play();
-    //     playPauseButton.textContent = "Pause";
-    //   } else {
-    //     videoElement.pause();
-    //     playPauseButton.textContent = "Play";
-    //   }
-    // };
-    // controlsContainer.appendChild(playPauseButton);
+    controlsContainer.style.display = "flex";
+    controlsContainer.style.justifyContent = "center";
+    controlsContainer.style.width = `${videoElement.clientWidth}px`;
 
     // Create timeline
     const timeline = document.createElement("input");
@@ -224,6 +209,17 @@ chrome.storage.local.get(["applicationIsOn"], (result) => {
     startAutoScrolling();
   }
   if (result["applicationIsOn"]) startAutoScrolling();
+});
+
+// Enable disable the autoscrolling
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "toggleAutoscroll") {
+    if (request.value) {
+      startAutoScrolling();
+    } else {
+      stopAutoScrolling();
+    }
+  }
 });
 
 setInterval(checkForNewShort, 100);
