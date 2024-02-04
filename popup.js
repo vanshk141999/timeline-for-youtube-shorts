@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Event listener for the checkbox change
+  // Event listener for the checkbox hiding the distractions
   hideNonVideoElementsCheckbox.addEventListener("change", function () {
     const value = hideNonVideoElementsCheckbox.checked;
     // Update local storage with the new state
