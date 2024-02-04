@@ -1,30 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const toggleAutoscrollCheckbox = document.getElementById("toggleAutoscroll");
+  const hideNonVideoElementsCheckbox = document.getElementById(
+    "hideNonVideoElements"
+  );
 
   // Retrieve the state from local storage and set the initial state of the checkbox
-  chrome.storage.local.get("autoscrollEnabled", function (data) {
-    const autoscrollEnabled =
-      data.autoscrollEnabled !== undefined ? data.autoscrollEnabled : true;
-    toggleAutoscrollCheckbox.checked = autoscrollEnabled;
-    // Update local storage with the initial state of the checkbox
-    chrome.storage.local.set({ autoscrollEnabled });
-    // Send message to content script to toggle autoscrolling
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {
-        action: "toggleAutoscroll",
-        value: autoscrollEnabled,
+  chrome.storage.local.get("hideNonVideoElements", function (data) {
+    const hideNonVideoElements =
+      data.hideNonVideoElements !== undefined
+        ? data.hideNonVideoElements
+        : false;
+    hideNonVideoElementsCheckbox.checked = hideNonVideoElements;
+
+    // If the checkbox is checked, send a message to the content script to toggle hiding non-video elements
+    if (hideNonVideoElements) {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          action: "toggleHideNonVideoElements",
+          value: hideNonVideoElements,
+        });
       });
-    });
+    }
   });
 
-  toggleAutoscrollCheckbox.addEventListener("change", function () {
-    const value = toggleAutoscrollCheckbox.checked;
+  // Event listener for the checkbox change
+  hideNonVideoElementsCheckbox.addEventListener("change", function () {
+    const value = hideNonVideoElementsCheckbox.checked;
     // Update local storage with the new state
-    chrome.storage.local.set({ autoscrollEnabled: value });
-    // Send message to content script to toggle autoscrolling
+    chrome.storage.local.set({ hideNonVideoElements: value });
+    // Send message to content script to toggle hiding non-video elements
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {
-        action: "toggleAutoscroll",
+        action: "toggleHideNonVideoElements",
         value,
       });
     });

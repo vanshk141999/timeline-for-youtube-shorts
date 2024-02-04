@@ -399,4 +399,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+// Listen for messages from the popup
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "toggleHideNonVideoElements") {
+    const videoElement = document.querySelector("video");
+    const elemetnts = document.querySelectorAll(
+      ".ytd-reel-player-overlay-renderer"
+    );
+    if (request.value) {
+      // Hide elements
+      elemetnts.forEach((element) => {
+        if (element !== videoElement) {
+          element.style.display = "none";
+        }
+      });
+    } else {
+      // Show all hidden elements
+      elemetnts.forEach((element) => {
+        element.style.display = "";
+      });
+    }
+  }
+  // Existing code for toggling autoscroll
+  // ...
+});
+
 setInterval(checkForNewShort, 100);
